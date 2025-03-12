@@ -1,0 +1,16 @@
+import pandas as pd
+from sklearn.preprocessing import OneHotEncoder
+
+# Load dataset
+data = pd.read_csv("data/imdb_movies.csv")
+
+# Handle missing values
+data.fillna({"runtime": data["runtime"].median(), "rating": data["rating"].mean()}, inplace=True)
+
+# One-hot encode genres
+encoder = OneHotEncoder(sparse=False)
+genres_encoded = encoder.fit_transform(data[["genre"]])
+genres_df = pd.DataFrame(genres_encoded, columns=encoder.get_feature_names_out(["genre"]))
+
+# Combine encoded features
+data = pd.concat([data, genres_df], axis=1)
